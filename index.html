@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>For Juliens ❤️</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #111;
+    font-family: Georgia, serif;
+    color: white;
+    overflow-x: hidden;
+    transition: background 0.2s;
+}
+
+.card {
+    width: min(800px, 92%);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+    border-radius: 25px;
+    padding: 35px;
+    box-shadow: 0 0 30px rgba(255,255,255,0.1);
+    position: relative;
+    z-index: 2;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.question {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    margin: 8px;
+    font-size: 16px;
+}
+
+.yes {
+    background: white;
+    color: #111;
+}
+
+.no {
+    background: #ff4d4d;
+    color: white;
+}
+
+#questionScreen {
+    text-align: center;
+}
+
+#response {
+    min-height: 50px;
+    margin-top: 20px;
+}
+
+.think-again {
+    color: #ff3333;
+    font-size: 32px;
+    font-weight: bold;
+
+    text-shadow:
+        0 0 10px red,
+        0 0 20px red,
+        0 0 40px red;
+
+    animation: shake 0.3s infinite;
+}
+
+@keyframes shake {
+    0%   { transform: translateX(0); }
+    25%  { transform: translateX(-7px); }
+    50%  { transform: translateX(7px); }
+    75%  { transform: translateX(-7px); }
+    100% { transform: translateX(0); }
+}
+
+.flash-red {
+    animation: redFlash 0.5s;
+}
+
+@keyframes redFlash {
+    0%   { background: #111; }
+    50%  { background: #4a0000; }
+    100% { background: #111; }
+}
+
+#letterScreen {
+    display: none;
+}
+
+#letter {
+    margin-top: 20px;
+    white-space: pre-wrap;
+    line-height: 1.8;
+    font-size: 18px;
+}
+
+.cursor {
+    animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+.controls {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+input[type="range"] {
+    width: 150px;
+}
+
+.heart {
+    position: fixed;
+    bottom: -30px;
+    pointer-events: none;
+    animation: floatUp linear forwards;
+    z-index: 1;
+}
+
+@keyframes floatUp {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(-110vh);
+        opacity: 0;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <!-- QUESTION -->
+    <div id="questionScreen">
+
+        <h1>🚨 IMPORTANT QUESTION 🚨</h1>
+
+        <div class="question">
+            Is Asma the baddest alive?
+        </div>
+
+        <button class="yes" onclick="correctAnswer()">
+            YES
+        </button>
+
+        <button class="no" onclick="wrongAnswer()">
+            NO
+        </button>
+
+        <div id="response"></div>
+
+    </div>
+
+
+    <!-- LETTER -->
+    <div id="letterScreen">
+
+        <h1>💌 For Juliens</h1>
+
+        <div id="letter"></div>
+
+        <div class="controls">
+
+            <button onclick="toggleMusic()">
+                🎵 Music
+            </button>
+
+            <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0.5"
+                oninput="changeVolume(this.value)"
+            >
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- YOUR SONG -->
+<audio id="bgMusic" loop>
+    <source src="song.mp3" type="audio/mpeg">
+</audio>
+
+
+<script>
+
+const text = `Huhu,
+
+I already know exactly what your reaction is gonna be — you're gonna send that stupid "aww" GIF. Fuck that. 😭
+
+But anyway, JULIENNSSSS,
+
+Even if I don't tell you, you're genuinely a hilarious guy, arguably funnier than me. But that is physically impossible for me to admit, so obviously I'm still better.
+
+Sometimes you piss me off so badly, though. You say the most stupid shit that could send even the calmest nga into a full-on rage, but we live. 💀 We all love that part of you anyway.
+
+You're genuinely a great guy and actually smart sometimes... occasionally retarded 💀 but it's calm.
+
+I wrote this for you because I know you're gonna be inactive soon, and I'm genuinely gonna miss you. I know everyone else will too.
+
+I pray that all your wishes come true because, even though you act like such a tough guy, I know you've been through a lot. I'm genuinely proud of how far you've come and how you always manage to stay so optimistic.
+
+You're such a fag sometimes, and I've honestly given up trying to argue with you 😭 but I know that wherever you go, you'll brighten up every room with your presence — and by presence, I mean your demonic energy.
+
+Keep being exactly who you are. I'll always be that little ghost haunting you and your personal lucky charm.
+
+WAAAAAYYY.
+
+Daily reminder that I'm the cutest and baddest alive.
+
+And I almost forgot to mention:
+
+I'm still better than you. ❤️`;
+
+
+const letter = document.getElementById("letter");
+const music = document.getElementById("bgMusic");
+
+music.volume = 0.5;
+
+
+/* WRONG ANSWER */
+
+function wrongAnswer() {
+
+    const response = document.getElementById("response");
+
+    response.innerHTML = "❌ THINK AGAIN.";
+
+    response.classList.remove("think-again");
+
+    // Restart animation
+    void response.offsetWidth;
+
+    response.classList.add("think-again");
+
+    // Red screen flash
+    document.body.classList.remove("flash-red");
+
+    void document.body.offsetWidth;
+
+    document.body.classList.add("flash-red");
+}
+
+
+/* CORRECT ANSWER */
+
+function correctAnswer() {
+
+    document.getElementById("questionScreen").style.display = "none";
+
+    document.getElementById("letterScreen").style.display = "block";
+
+    // Start music
+    music.play().catch(() => {
+        console.log("Music needs user interaction.");
+    });
+
+    startLetter();
+}
+
+
+/* TYPE THE LETTER */
+
+function startLetter() {
+
+    let i = 0;
+
+    function type() {
+
+        if (i < text.length) {
+
+            letter.innerHTML =
+                text.substring(0, i + 1) +
+                '<span class="cursor">|</span>';
+
+            i++;
+
+            setTimeout(type, 25);
+
+        } else {
+
+            letter.innerHTML = text;
+
+            createHearts();
+        }
+    }
+
+    type();
+}
+
+
+/* MUSIC BUTTON */
+
+function toggleMusic() {
+
+    if (music.paused) {
+
+        music.play();
+
+    } else {
+
+        music.pause();
+
+    }
+}
+
+
+/* VOLUME */
+
+function changeVolume(value) {
+
+    music.volume = value;
+
+}
+
+
+/* FLOATING HEARTS */
+
+function createHearts() {
+
+    setInterval(() => {
+
+        const heart = document.createElement("div");
+
+        heart.className = "heart";
+
+        heart.innerHTML = "❤️";
+
+        heart.style.left =
+            Math.random() * 100 + "vw";
+
+        heart.style.fontSize =
+            (15 + Math.random() * 20) + "px";
+
+        heart.style.animationDuration =
+            (4 + Math.random() * 4) + "s";
+
+        document.body.appendChild(heart);
+
+        setTimeout(() => {
+            heart.remove();
+        }, 8000);
+
+    }, 500);
+}
+
+</script>
+
+</body>
+</html>
